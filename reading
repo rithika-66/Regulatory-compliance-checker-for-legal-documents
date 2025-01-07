@@ -1,0 +1,39 @@
+import os
+import docx
+import PyPDF2
+
+def read_txt(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+
+def read_docx(file_path):
+    doc = docx.Document(file_path)
+    full_text = []
+    for paragraph in doc.paragraphs:
+        full_text.append(paragraph.text)
+    return '\n'.join(full_text)
+
+def read_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        text = ""
+        for page_num in range(len(reader.pages)):
+            page = reader.pages[page_num]
+            text += page.extract_text()
+    return text
+
+def read_file(file_path):
+    extension = os.path.splitext(file_path)[1].lower()
+    if extension == ".txt":
+        return read_txt(file_path)
+    elif extension == ".docx":
+        return read_docx(file_path)
+    elif extension == ".pdf":
+        return read_pdf(file_path)
+    else:
+        return "Unsupported file format"
+
+
+file_path = 'your_file_path_here'  # Replace with your file path
+file_data = read_file(file_path)
+print(file_data)
