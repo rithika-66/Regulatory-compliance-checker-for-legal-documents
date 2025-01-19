@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #key-clauses {
+            white-space: pre-wrap;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload Contract for Clause Extraction</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" accept=".pdf,.docx" required>
+        <br>
+        <button type="submit">Upload and Analyze</button>
+    </form>
+
+    <div id="result" style="display:none;">
+        <h3>Key Clauses:</h3>
+        <div id="key-clauses"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("uploadForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        formData.append("file", document.getElementById("file").files[0]);
+
+        fetch("/upload", {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.key_clauses) {
+                document.getElementById("result").style.display = "block";
+                document.getElementById("key-clauses").textContent = data.key_clauses;
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error uploading file: ' + error);
+        });
+    });
+</script>
+
+</body>
+</html>
